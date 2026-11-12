@@ -20,7 +20,9 @@ Roda em paralelo com o seu outro projeto: containers `pygmy-*`, rede `pygmy_net`
    Homepage `https://pygmy.gabrielbarbosadev.com.br` · Callback `https://pygmy.gabrielbarbosadev.com.br/api/admin/github/callback`.
 5. **Portas livres?** `ss -ltn | grep -E ':3100|:8100'` — se ocupadas, mude `WEB_PORT`/`API_PORT` no `.env` **e** em `deploy/nginx-pygmy.conf`.
 6. **Subir**: `docker compose up -d --build`
-7. **nginx + HTTPS**: copie `deploy/nginx-pygmy.conf` para `/etc/nginx/sites-available/pygmy.conf`, ative (`ln -s` em `sites-enabled`), `sudo nginx -t && sudo systemctl reload nginx` e `sudo certbot --nginx -d pygmy.gabrielbarbosadev.com.br`.
+7. **Proxy + HTTPS**
+   - **Caddy em Docker** (caso desta VPS): coloque o container do Caddy na rede `pygmy_net` e acrescente `deploy/Caddyfile.pygmy` ao Caddyfile; o HTTPS é automático. Passo a passo em `deploy/CADDY.md`.
+   - **nginx no host**: copie `deploy/nginx-pygmy.conf` para o diretório de sites, `nginx -t && systemctl reload nginx` e `certbot --nginx -d pygmy.gabrielbarbosadev.com.br`.
 8. **Atualizar depois**: `./deploy/update.sh`.
 
 Se o seu outro projeto usa Caddy/Traefik em vez de nginx, a regra é a mesma: `/v1/*`, `/docs`, `/openapi.json` → `127.0.0.1:8100`; o resto → `127.0.0.1:3100`; enviando `X-Forwarded-For`/`X-Forwarded-Proto`.
