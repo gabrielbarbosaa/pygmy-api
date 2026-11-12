@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
+  <title>${subject}</title>
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .bg { background-color: #0b0f1a !important; }
+      .card { background-color: #151b2b !important; border-color: #252d44 !important; }
+      .text { color: #e5e9f5 !important; }
+      .muted { color: #8b95b3 !important; }
+      .codebox { background-color: #1d2540 !important; border-color: #323d66 !important; }
+      .code { color: #ffffff !important; }
+      .divider { border-color: #252d44 !important; }
+    }
+    @media only screen and (max-width: 480px) {
+      .card { padding: 28px 20px !important; }
+      .code { font-size: 32px !important; letter-spacing: 8px !important; }
+    }
+  </style>
+</head>
+<body class="bg" style="margin:0;padding:0;background-color:#f3f5fb;">
+  <!-- preheader (texto de prévia na caixa de entrada) -->
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
+    Seu código é ${code}. Expira em ${ttl_minutes} minutos.
+  </div>
+
+  <table role="presentation" class="bg" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f3f5fb;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;">
+          <!-- marca -->
+          <tr>
+            <td align="center" style="padding:0 0 24px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td width="36" height="36" align="center" valign="middle" style="width:36px;height:36px;border-radius:10px;background-color:#6366f1;background-image:linear-gradient(135deg,#6366f1,#8b5cf6);color:#ffffff;font-size:18px;font-weight:700;line-height:36px;">${app_initial}</td>
+                  <td style="padding-left:10px;font-size:17px;font-weight:700;color:#1b2140;letter-spacing:-0.2px;" class="text">${app_name}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- cartão -->
+          <tr>
+            <td class="card" style="background-color:#ffffff;border:1px solid #e6e9f4;border-radius:20px;padding:40px 36px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+              <h1 class="text" style="margin:0 0 10px;font-size:24px;line-height:1.25;font-weight:700;color:#1b2140;letter-spacing:-0.4px;">Confirme seu e-mail</h1>
+              <p class="muted" style="margin:0 0 28px;font-size:15px;line-height:1.6;color:#5b6486;">
+                Use o código abaixo para continuar. Por segurança, ele é de uso único.
+              </p>
+
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td class="codebox" align="center" style="background-color:#f3f4ff;border:1px solid #dfe1ff;border-radius:14px;padding:22px 12px;">
+                    <span class="code" style="font-family:'SF Mono',SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;font-size:40px;font-weight:700;letter-spacing:12px;color:#4338ca;padding-left:12px;">${code}</span>
+                  </td>
+                </tr>
+              </table>
+
+              <p class="muted" style="margin:20px 0 0;text-align:center;font-size:14px;color:#5b6486;">
+                ⏱ Expira em <strong class="text" style="color:#1b2140;">${ttl_minutes} minutos</strong>
+              </p>
+
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:32px;">
+                <tr><td class="divider" style="border-top:1px solid #e6e9f4;font-size:0;line-height:0;height:1px;">&nbsp;</td></tr>
+              </table>
+
+              <p class="muted" style="margin:24px 0 0;font-size:13px;line-height:1.6;color:#7a83a3;">
+                🔒 Nunca compartilhe este código com ninguém. Nossa equipe jamais pedirá por ele.<br>
+                Não foi você? Pode ignorar este e-mail com tranquilidade — nenhuma ação será feita.
+              </p>
+            </td>
+          </tr>
+
+          <!-- rodapé -->
+          <tr>
+            <td align="center" class="muted" style="padding:24px 12px 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:1.6;color:#8b93b0;">
+              Enviado por ${app_name}<br>
+              Este é um e-mail automático, não é necessário responder.
+            </td>
+          </tr>
+        </table>
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

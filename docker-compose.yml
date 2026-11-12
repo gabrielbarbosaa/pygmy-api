@@ -1,0 +1,79 @@
+# Fully self-contained stack. Isolation from other projects on the VPS:
+#  - own project name + own network (pygmy_net) + own volume
+#  - prefixed container names
+#  - redis is never published; api and web publish only on 127.0.0.1
+#  - memory/cpu limits so it can't starve the other service
+name: pygmy
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: pygmy-redis
+    command: ["sh", "-c", "exec redis-server --requirepass \"$$REDIS_PASSWORD\" --appendonly yes --maxmemory 64mb --maxmemory-policy volatile-ttl"]
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?set REDIS_PASSWORD in .env}
+    volumes:
+      - pygmy_redis_data:/data
+    networks: [pygmy_net]
+    restart: unless-stopped
+    mem_limit: 128m
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" --no-auth-warning ping | grep -q PONG"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  api:
+    build: ./backend
+    container_name: pygmy-api
+    environment:
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      OTP_SECRET: ${OTP_SECRET:?set OTP_SECRET in .env}
+      PYGMY_WEB_KEY: ${PYGMY_WEB_KEY:?set PYGMY_WEB_KEY in .env}
+      PYGMY_ADMIN_KEY: ${PYGMY_ADMIN_KEY:?set PYGMY_ADMIN_KEY in .env}
+      OTP_SENDER: ${OTP_SENDER:-smtp}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      SMTP_USE_SSL: ${SMTP_USE_SSL:-false}
+      APP_NAME: ${APP_NAME:-pygmy}
+    depends_on:
+      redis:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${API_PORT:-8100}:8000"
+    networks: [pygmy_net]
+    restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.5
+
+  web:
+    build: ./frontend
+    container_name: pygmy-web
+    environment:
+      BACKEND_URL: http://api:8000
+      PYGMY_API_KEY: ${PYGMY_WEB_KEY}
+      PYGMY_ADMIN_KEY: ${PYGMY_ADMIN_KEY}
+      # Login do /admin: somente GitHub (OAuth)
+      APP_URL: ${APP_URL:-http://localhost:3100}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+      ADMIN_GITHUB_USERS: ${ADMIN_GITHUB_USERS:-}
+      PUBLIC_API_URL: ${PUBLIC_API_URL:-https://api.seudominio.com}
+    depends_on: [api]
+    ports:
+      - "127.0.0.1:${WEB_PORT:-3100}:3000"
+    networks: [pygmy_net]
+    restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.5
+
+networks:
+  pygmy_net:
+    name: pygmy_net
+
+volumes:
+  pygmy_redis_data:
+    name: pygmy_redis_data
