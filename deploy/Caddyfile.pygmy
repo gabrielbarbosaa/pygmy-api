@@ -1,0 +1,24 @@
+# Bloco para colar no Caddyfile do proxy da VPS (Caddy em Docker).
+# O container do Caddy precisa estar na rede "pygmy_net" para enxergar os containers
+# pygmy-web e pygmy-api pelo nome. HTTPS (Let's Encrypt) é automático.
+
+pygmy.gabrielbarbosadev.com.br {
+	encode zstd gzip
+
+	# API pública (para os seus outros projetos)
+	handle /v1/* {
+		reverse_proxy pygmy-api:8000
+	}
+	handle /docs {
+		reverse_proxy pygmy-api:8000
+	}
+	handle /openapi.json {
+		reverse_proxy pygmy-api:8000
+	}
+
+	# Site (Next.js): página, demo e /admin
+	# (o /admin do backend não é roteado: só o container do site fala com ele)
+	handle {
+		reverse_proxy pygmy-web:3000
+	}
+}
